@@ -31,7 +31,8 @@ func gatherOptions(fs *flag.FlagSet, args ...string) options {
 	o.gitee.AddFlags(fs)
 	o.service.AddFlags(fs)
 
-	fs.Parse(args)
+	_ = fs.Parse(args)
+
 	return o
 }
 
@@ -47,7 +48,7 @@ func main() {
 	if err := secretAgent.Start([]string{o.gitee.TokenPath}); err != nil {
 		logrus.WithError(err).Fatal("Error starting secret agent.")
 	}
-	
+
 	defer secretAgent.Stop()
 
 	c := giteeclient.NewClient(secretAgent.GetTokenGenerator(o.gitee.TokenPath))
