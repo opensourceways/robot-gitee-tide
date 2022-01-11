@@ -5,6 +5,7 @@ import (
 	"regexp"
 
 	"github.com/opensourceways/community-robot-lib/config"
+	"github.com/opensourceways/community-robot-lib/giteeclient"
 	"github.com/opensourceways/community-robot-lib/robot-gitee-framework"
 	sdk "github.com/opensourceways/go-gitee/gitee"
 	"github.com/sirupsen/logrus"
@@ -28,12 +29,13 @@ type iClient interface {
 	GetBot() (sdk.User, error)
 }
 
-func newRobot(cli iClient) *robot {
-	return &robot{cli: cli}
+func newRobot(cli iClient, botName string) *robot {
+	return &robot{cli: cli, botName: botName}
 }
 
 type robot struct {
-	cli iClient
+	cli     iClient
+	botName string
 }
 
 func (bot *robot) NewConfig() config.Config {
@@ -59,7 +61,7 @@ func (bot *robot) RegisterEventHandler(f framework.HandlerRegitster) {
 }
 
 func (bot *robot) handlePREvent(e *sdk.PullRequestEvent, c config.Config, log *logrus.Entry) error {
-	if e.GetState() != sdk.ActionOpen {
+	if e.GetPullRequest().GetState() != sdk.ActionOpen {
 		return nil
 	}
 
@@ -85,11 +87,13 @@ func (bot *robot) handleNoteEvent(e *sdk.NoteEvent, c config.Config, log *logrus
 		return nil
 	}
 
-	if !e.GetPullRequest().GetMergeable() {
-		return nil
-	}
-
 	org, repo := e.GetOrgRepo()
+	if !e.GetPullRequest().GetMergeable() {
+		return bot.writeComment(
+			org, repo, e.GetPRNumber(), e.GetPRAuthor(),
+			" Because it conflicts to the target branch.",
+		)
+	}
 
 	return bot.handle(org, repo, e.GetPullRequest(), c, log, nil)
 }
@@ -118,7 +122,7 @@ func (bot *robot) handle(
 	}
 
 	if details := checkPRLabel(pr.LabelsToSet(), ops, cfg, log); details != "" {
-		return bot.writeComment(org, repo, number, "\n\n"+details)
+		return bot.writeComment(org, repo, number, pr.GetUser().GetLogin(), "\n\n"+details)
 	}
 
 	return bot.cli.MergePR(
@@ -129,10 +133,10 @@ func (bot *robot) handle(
 	)
 }
 
-func (bot *robot) writeComment(org, repo string, number int32, c string) error {
+func (bot *robot) writeComment(org, repo string, number int32, prAuthor, c string) error {
 	_ = bot.deleteOldComments(org, repo, number)
 
-	return bot.cli.CreatePRComment(org, repo, number, c)
+	return bot.cli.CreatePRComment(org, repo, number, fmt.Sprintf(tideNotification, prAuthor)+c)
 }
 
 func (bot *robot) deleteOldComments(org, repo string, number int32) error {
@@ -141,13 +145,8 @@ func (bot *robot) deleteOldComments(org, repo string, number int32) error {
 		return err
 	}
 
-	b, err := bot.cli.GetBot()
-	if err != nil {
-		return err
-	}
-
-	for _, c := range findBotComment(comments, b.Login, tideNotificationRe.MatchString) {
-		_ = bot.cli.DeletePRComment(org, repo, c.commentID)
+	for _, c := range giteeclient.FindBotComment(comments, bot.botName, tideNotificationRe.MatchString) {
+		_ = bot.cli.DeletePRComment(org, repo, c.CommentID)
 	}
 
 	return nil

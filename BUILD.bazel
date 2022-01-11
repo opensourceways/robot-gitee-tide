@@ -20,7 +20,6 @@ push_image(
 go_library(
     name = "go_default_library",
     srcs = [
-        "bot_comment.go",
         "config.go",
         "label.go",
         "main.go",
