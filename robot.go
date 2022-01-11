@@ -61,7 +61,7 @@ func (bot *robot) RegisterEventHandler(f framework.HandlerRegitster) {
 }
 
 func (bot *robot) handlePREvent(e *sdk.PullRequestEvent, c config.Config, log *logrus.Entry) error {
-	if e.GetPullRequest().GetState() != sdk.ActionOpen {
+	if e.GetPullRequest().GetState() != sdk.StatusOpen {
 		return nil
 	}
 

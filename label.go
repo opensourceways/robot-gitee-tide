@@ -54,7 +54,7 @@ func getLatestLog(ops []sdk.OperateLog, label string, log *logrus.Entry) (labelL
 
 func areAllLabelsReady(labels sets.String, cfg *botConfig) bool {
 	for _, l := range cfg.Labels {
-		if labels.Has(l.Label) {
+		if !labels.Has(l.Label) {
 			return false
 		}
 	}
