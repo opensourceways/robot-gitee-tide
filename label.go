@@ -23,7 +23,7 @@ func getLatestLog(ops []sdk.OperateLog, label string, log *logrus.Entry) (labelL
 	for i := range ops {
 		op := &ops[i]
 
-		if !strings.Contains(op.Content, label) {
+		if !strings.Contains(op.Content, label) || op.ActionType != "add_label" {
 			continue
 		}
 

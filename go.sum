@@ -165,6 +165,8 @@ github.com/opensourceways/community-robot-lib v0.0.0-20220111113917-70bda9484fb0
 github.com/opensourceways/community-robot-lib v0.0.0-20220111113917-70bda9484fb0/go.mod h1:7Ed0TgvJBN6UaXnHwHRqZGCfg6SYpqe5mi6esCKaD1g=
 github.com/opensourceways/go-gitee v0.0.0-20211230094517-effa55336a8b h1:xkMOH8c39WYn60h271MHrxJrA8trgX0DHZSLOE4lFAI=
 github.com/opensourceways/go-gitee v0.0.0-20211230094517-effa55336a8b/go.mod h1:yvVsEMhp7frMblzN1sco4C7cRlnlpqkkn3O2JQNdRu0=
+github.com/opensourceways/go-gitee v0.0.0-20220124083559-634d3184421d h1:t/CZybcGZbG4JSVTPxSiUwZq2G9+yrajuDvRA3ANWds=
+github.com/opensourceways/go-gitee v0.0.0-20220124083559-634d3184421d/go.mod h1:yvVsEMhp7frMblzN1sco4C7cRlnlpqkkn3O2JQNdRu0=
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
